@@ -1,90 +1,100 @@
 const express = require("express");
 const mysql = require("mysql2");
 const path = require("path");
-const port = 3019;
 
 const app = express();
+const port = 3019;
 
-// Middleware to serve static files
-app.use(express.static(__dirname));
-
-// Middleware to parse form data
-app.use(express.urlencoded({ extended: true }));
-
-// Connect to MySQL (Without selecting the database initially)
-const db = mysql.createConnection({
+// Database credentials
+const dbConfig = {
   host: "localhost",
   user: "root", // Replace with your MySQL username
   password: "hitlerin39", // Replace with your MySQL password
-});
+};
 
-// Establish connection
+// Middleware to serve static files and parse form data
+app.use(express.static(__dirname));
+app.use(express.urlencoded({ extended: true }));
+
+// Connect to MySQL and setup database and table
+const db = mysql.createConnection(dbConfig);
+
 db.connect((err) => {
   if (err) {
     console.error("Error connecting to MySQL:", err);
-    return;
+    process.exit(1);
   }
-  console.log("MySQL connection established.");
+  console.log("Connected to MySQL.");
 
-  // Create the database if it doesn't exist
-  const createDatabaseQuery = `CREATE DATABASE IF NOT EXISTS intro_data`;
-  db.query(createDatabaseQuery, (err) => {
+  // Ensure database exists
+  const createDatabase = "CREATE DATABASE IF NOT EXISTS intro_data";
+  db.query(createDatabase, (err) => {
     if (err) {
       console.error("Error creating database:", err);
-      return;
+      process.exit(1);
     }
     console.log("Database 'intro_data' ensured.");
 
-    // Use the 'Ecommerecce' database after ensuring it exists
+    // Switch to the database
     db.changeUser({ database: "intro_data" }, (err) => {
       if (err) {
-        console.error("Error selecting database:", err);
-        return;
+        console.error("Error switching database:", err);
+        process.exit(1);
       }
-      console.log("Connected to 'inro_data' database.");
+      console.log("Using 'intro_data' database.");
 
-      // Create the table for user data (if it doesn't exist)
-      const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        message TEXT NOT NULL
-      )`;
-
-      db.query(createTableQuery, (err) => {
+      // Drop the table if it exists
+      const dropTable = "DROP TABLE IF EXISTS users";
+      db.query(dropTable, (err) => {
         if (err) {
-          console.error("Error creating table:", err);
-          return;
+          console.error("Error dropping table:", err);
+          process.exit(1);
         }
-        console.log("Table 'users' ensured.");
+        console.log("Existing 'users' table dropped (if it existed).");
+
+        // Create the table
+        const createTable = `
+          CREATE TABLE users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            message TEXT NOT NULL,
+            course VARCHAR(255) NOT NULL
+          )`;
+        db.query(createTable, (err) => {
+          if (err) {
+            console.error("Error creating table:", err);
+            process.exit(1);
+          }
+          console.log("Table 'users' created successfully.");
+        });
       });
     });
   });
 });
 
-// Serve the HTML form
+// Serve the form
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "form.html"));
 });
 
-// Handle the form submission
+// Handle form submissions
 app.post("/post", (req, res) => {
-  const { name, email, message } = req.body; // Extract values from req.body
+  const { name, email, message, course } = req.body;
 
-  const insertQuery = "INSERT INTO users (name, email, message) VALUES (?, ?, ?)";
-  db.query(insertQuery, [name, email, message], (err, result) => {
+  const insertQuery = "INSERT INTO users (name, email, message, course) VALUES (?, ?, ?, ?)";
+  db.query(insertQuery, [name, email, message, course], (err, result) => {
     if (err) {
       console.error("Error inserting data:", err);
-      res.status(500).send("Error submitting form");
+      res.status(500).send("Error saving your data. Please try again.");
       return;
     }
     console.log("Form data saved:", result);
-    res.send("Form submitted successfully");
+    res.send("<h1>Form submitted successfully!</h1><a href='/'>Go back</a>");
   });
 });
 
 // Start the server
 app.listen(port, () => {
-  console.log("Server started on port " + port);
+  console.log(`Server is running at http://localhost:${port}`);
 });
