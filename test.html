@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Improved Product Management</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: "Poppins", sans-serif;
+        background: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #333;
+      }
+
+      h1 {
+        font-size: 36px;
+        color: #2c3e50;
+        margin-bottom: 0;
+        text-align: center;
+      }
+
+      .header-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 1200px;
+        align-items: center;
+        margin-top: 0;
+      }
+
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+        width: 100%;
+        max-width: 1200px;
+        position: relative;
+      }
+
+      .box-preview-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        justify-content: center;
+        width: 100%;
+        align-items: flex-start;
+      }
+
+      .box-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 320px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      .box-wrapper:hover {
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
+      }
+
+      label {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 8px;
+        align-self: flex-start;
+        font-weight: 600;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background: #f8f9fa;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #007bff;
+        background: #fff;
+      }
+
+      .drag-drop {
+        width: 100%;
+        height: 150px;
+        background: #f8f9fa;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        margin-bottom: 15px;
+        text-align: center;
+        transition: border-color 0.3s ease;
+      }
+
+      .drag-drop:hover {
+        border-color: #007bff;
+      }
+
+      .button {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .delete-box {
+        background: #dc3545;
+        color: #fff;
+        border: none;
+        font-size: 14px;
+      }
+
+      .delete-box:hover {
+        background: #c82333;
+      }
+
+      /* Button Styles */
+      .add-box {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px 0;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+        transform: scale(1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 200px;
+      }
+
+      .add-box:hover {
+        background: linear-gradient(45deg, #0056b3, #0099cc);
+        box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+        transform: scale(1.05);
+      }
+
+      .add-box:active {
+        transform: scale(0.98);
+      }
+
+      .add-box i {
+        margin-right: 8px; /* space between icon and text */
+      }
+
+      .publish-changes {
+        background: linear-gradient(45deg, #28a745, #34d058);
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px 0;
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+        transform: scale(1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 200px;
+      }
+
+      .publish-changes:hover {
+        background: linear-gradient(45deg, #218838, #2ba52e);
+        box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+        transform: scale(1.05);
+      }
+
+      .publish-changes:active {
+        transform: scale(0.98);
+      }
+
+      .publish-changes i {
+        margin-right: 8px; /* space between icon and text */
+      }
+
+      .preview-section {
+        background: #fff;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        padding: 20px;
+      }
+
+      .preview-section img {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+
+      .preview-name {
+        font-size: 18px;
+        color: #2c3e50;
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+      .drag-drop img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+
+      .preview-price {
+        font-size: 22px;
+        color: #28a745;
+        font-weight: 600;
+      }
+
+      /* Responsive design */
+      @media (max-width: 1200px) {
+        .box-wrapper,
+        .preview-wrapper {
+          width: 45%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .box-wrapper,
+        .preview-wrapper {
+          width: 100%;
+        }
+
+        /* Stack buttons vertically on smaller screens */
+        .header-container {
+          flex-direction: column;
+        }
+
+        .add-box,
+        .publish-changes {
+          margin-bottom: 15px;
+        }
+      }
+
+      /* For large screens: position buttons on either side */
+      @media (min-width: 1201px) {
+        .header-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center; /* Ensures buttons and text are vertically centered */
+        }
+
+        .add-box {
+          align-self: center;
+          margin-right: 20px;
+        }
+
+        .publish-changes {
+          align-self: center;
+          margin-left: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-container">
+      <!-- Buttons aligned to left and right -->
+      <button class="publish-changes" id="publishChangesBtn">
+        <i class="fas fa-check"></i> Publish Changes
+      </button>
+      <h1>Manage Your Products</h1>
+      <button class="add-box" id="addBoxBtn">
+        <i class="fas fa-plus"></i> Add A Card
+      </button>
+    </div>
+    <div class="container" id="container">
+      <!-- Form and Preview will go here -->
+    </div>
+
+    <script>
+      const container = document.getElementById("container");
+      const addBoxBtn = document.getElementById("addBoxBtn");
+      const publishChangesBtn = document.getElementById("publishChangesBtn");
+
+      function createBox() {
+        const boxWrapper = document.createElement("div");
+        boxWrapper.classList.add("box-wrapper");
+        const previewWrapper = document.createElement("div");
+        previewWrapper.classList.add("preview-wrapper");
+
+        const boxPreviewWrapper = document.createElement("div");
+        boxPreviewWrapper.classList.add("box-preview-wrapper");
+
+        boxWrapper.innerHTML = `
+          <label>Upload Product Image</label>
+          <div class="drag-drop">
+            <p>Drag & Drop or Click to Upload</p>
+          </div>
+
+          <label>Product Name</label>
+          <input type="text" placeholder="Enter product name" />
+
+          <label>Price</label>
+          <input type="number" placeholder="Enter price" />
+
+          <label>Category</label>
+          <select>
+            <option value="" disabled selected>Select Category</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="home">Home</option>
+          </select>
+
+          <button class="button delete-box">Delete</button>
+        `;
+
+        previewWrapper.innerHTML = `
+          <div class="preview-section">
+            <img src="" alt="" style="display: none;" />
+            <p class="preview-name">Product Name</p>
+            <p class="preview-price">₹0.00</p>
+          </div>
+        `;
+
+        const dragDrop = boxWrapper.querySelector(".drag-drop");
+        const previewImage = previewWrapper.querySelector(
+          ".preview-section img"
+        );
+        const nameInput = boxWrapper.querySelector('input[type="text"]');
+        const priceInput = boxWrapper.querySelector('input[type="number"]');
+        const categorySelect = boxWrapper.querySelector("select");
+        const previewName = previewWrapper.querySelector(".preview-name");
+        const previewPrice = previewWrapper.querySelector(".preview-price");
+
+        dragDrop.addEventListener("click", () => {
+          const fileInput = document.createElement("input");
+          fileInput.type = "file";
+          fileInput.accept = "image/*";
+          fileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                dragDrop.innerHTML = `<img src="${event.target.result}" />`;
+                previewImage.src = event.target.result;
+                previewImage.style.display = "block";
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+          fileInput.click();
+        });
+
+        nameInput.addEventListener("input", () => {
+          previewName.textContent = nameInput.value || "Product Name";
+        });
+
+        priceInput.addEventListener("input", () => {
+          previewPrice.textContent = `₹${priceInput.value || "0.00"}`;
+        });
+
+        boxWrapper
+          .querySelector(".delete-box")
+          .addEventListener("click", () => {
+            boxWrapper.remove();
+            previewWrapper.remove();
+          });
+
+        boxPreviewWrapper.appendChild(boxWrapper);
+        boxPreviewWrapper.appendChild(previewWrapper);
+        container.prepend(boxPreviewWrapper);
+      }
+
+      addBoxBtn.addEventListener("click", createBox);
+    </script>
+  </body>
+</html>
