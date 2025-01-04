@@ -27,21 +27,21 @@ db.connect((err) => {
   console.log("MySQL connection established.");
 
   // Create the database if it doesn't exist
-  const createDatabaseQuery = `CREATE DATABASE IF NOT EXISTS Ecommerecce`;
+  const createDatabaseQuery = `CREATE DATABASE IF NOT EXISTS intro_data`;
   db.query(createDatabaseQuery, (err) => {
     if (err) {
       console.error("Error creating database:", err);
       return;
     }
-    console.log("Database 'Ecommerecce' ensured.");
+    console.log("Database 'intro_data' ensured.");
 
     // Use the 'Ecommerecce' database after ensuring it exists
-    db.changeUser({ database: "Ecommerecce" }, (err) => {
+    db.changeUser({ database: "intro_data" }, (err) => {
       if (err) {
         console.error("Error selecting database:", err);
         return;
       }
-      console.log("Connected to 'Ecommerecce' database.");
+      console.log("Connected to 'inro_data' database.");
 
       // Create the table for user data (if it doesn't exist)
       const createTableQuery = `
